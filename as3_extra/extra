@@ -1,0 +1,141 @@
+empty: 
+
+w1: public
+
+w2: final
+
+w3: static
+
+w4: synchronized
+
+w5: transient
+
+w: empty
+ | w1 w2345
+ | w2 w1345
+ | w3 w1245
+ | w4 w1235
+ | w5 w1234
+
+w2345: empty
+     | w2 w345
+     | w3 w245 
+     | w4 w235 
+     | w5 w234 
+
+w1345: empty 
+      | w1 w345
+      | w3 w145 
+      | w4 w135 
+      | w5 w134 
+
+w1245: empty
+      | w1 w245
+      | w2 w145 
+      | w4 w125 
+      | w5 w124 
+
+w1235: empty
+      | w1 w235 
+      | w2 w135 
+      | w3 w125 
+      | w5 w123 
+
+w1234: empty
+      | w1 w234 
+      | w2 w134 
+      | w3 w124 
+      | w4 w125 
+
+w123: empty
+     | w1 w23 
+     | w2 w13 
+     | w3 w12 
+
+w124: empty
+     | w1 w24 
+     | w2 w14 
+     | w4 w12 
+
+w125: empty
+     | w1 w25 
+     | w2 w15 
+     | w5 w12 
+
+w134: empty 
+     | w1 w34 
+     | w3 w14 
+     | w4 w13 
+
+w135: empty
+     | w1 w35 
+     | w3 w15 
+     | w5 w13 
+
+w145: empty
+     | w1 w45 
+     | w4 w15 
+     | w5 w14 
+
+w234: empty
+     | w2 w34 
+     | w3 w24 
+     | w4 w23 
+
+w235: empty 
+     | w2 w35 
+     | w3 w25 
+     | w5 w23 
+
+w245: empty
+     | w2 w45 
+     | w4 w25 
+     | w5 w24 
+
+w345: empty
+     | w3 w45 
+     | w4 w35 
+     | w5 w34 
+
+w12: empty
+    | w1 w2
+    | w2 w1
+
+w13: empty
+    | w1 w3
+    | w3 w1
+
+w14: empty
+    | w1 w4
+    | w4 w1
+
+w15: empty
+    | w1 w5 
+    | w5 w1
+
+w23: empty
+    | w2 w3 
+    | w3 w2 
+
+w24: empty
+    | w2 w4 
+    | w4 w2 
+
+w25: empty
+    | w2 w5 
+    | w5 w2 
+
+w34: empty
+    | w3 w4 
+    | w4 w3 
+
+w35: empty
+    | w3 w5 
+    | w5 w3 
+
+w45: empty
+    | w4 w5 
+    | w5 w4
+
+I think we can precompute the hash code of all the permutations and store them in a hashset. To check if it's a valid
+sequence, we can hash the sequence and check if it's in the hashset.

@@ -1,0 +1,46 @@
+NetID: yl2335
+Name: Yangxiaokang Liu
+
+Below are some points that I concerned a lot when writing the code and they help explain why I wrote the code
+like it is now. Most of them come from the book, precedence of operators are modified through the process of
+debugging and looking up precedence of operators in C.
+
+1. An entire Tiger program is just an expression.
+
+2. A declaration sequence is either one declaration or a declaration followed by another declaration sequence.
+   An optional declaration sequence is either empty or a declaration sequence.
+
+3. There are three kinds of declarations
+   a. Data type declaration. Three kinds of type declarations, built-in types, records, arrays.
+   b. Variable declaration. Short form is the name of the variable being defined followed by an expression.
+      In the long form, the type of the variable is also given.
+   c. Function declaration. Procedure declaration or function declaration, the latter has return type labeled
+      after the parameters
+
+4. L-value can also be classified into three types
+   a. Variable is an identifier.
+   b. Record field. An l-value followed by a dot and a field name (which is just an identifier).
+   c. Array subscript. An l-value followed by a pair of brackets and an integer embodied in between.
+
+   When handling the l-value, the naive production 'lvalue: lvalue LBRACK exp RBRACK' would cause a shift/reduce
+   conflict with 'arrval: ID LBRACK exp RBRACK OF exp' (which is an array value expression). This would cause an
+   error because since yacc prefers shift. One way to solve this problem is to add another production rule 
+   'lvaule: ID LBRACK exp RBRACK', yacc would keep shifting the two productions until it reaches the point where 
+   the lookup can provide enough information to make the right choice (shift only for OF).
+
+5. Different types of expressions.
+   a. Primitive expressions. Unit, string literal, nil, int number.
+   b. R-values. Function call, record literal, array literal.
+   c. L-values. Variables, record fields, array subscripts.
+   d. Arithmetic expressions and boolean expressions. Boolean operators are non-associative and have lower precedence
+      than arithmetic operators.
+   e. Statement-like expressions. Assignment, let clause, if Statement w/o else, for loop and while loop. In order to 
+      avoid the dangling else problem, we can make THEN less precedent then ELSE so that yacc will continue shifting. 
+      Since the priority of a rule is given by the last token occuring on the right-hand side of that rule. For loop, while
+      loop and if statement should have lower precedence then arithmetic operators and boolean operators to avoid shift/reduce
+      conflicts.
+
+6. When using my own lexer, I found a bug at line 109. In my original code, I incremented lineNum and appended yyPos to the
+   front of linePos. This is wrong because I'm actually incrementing lineNum for a newline in a string literal. Another
+   modification to my original lexer is that I deleted the ErrorMsg.reset so that line numbers and positions wouldn't be 
+   cleared before they were printed out.

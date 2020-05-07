@@ -1,0 +1,36 @@
+1,22c1,12
+< [autoloading done]
+< [attempting to load plugin $/lex-ext.cm]
+< [plugin $/lex-ext.cm loaded successfully]
+< [attempting to load plugin $/mllex-tool.cm]
+< [plugin $/mllex-tool.cm loaded successfully]
+< [attempting to load plugin $/grm-ext.cm]
+< [plugin $/grm-ext.cm loaded successfully]
+< [attempting to load plugin $/mlyacc-tool.cm]
+< [plugin $/mlyacc-tool.cm loaded successfully]
+< [New bindings added.]
+< tests/test06.tig:16.23:Variable (val) is of an unknown type, or the variable has not been defined.
+< tests/test06.tig:19.21:Variable (t) is of an unknown type, or the variable has not been defined.
+< tests/test06.tig:19.13:Type of field 'right' initializer does not agree with record declaration.
+< tests/test06.tig:23.13:Type of field 'val' initializer does not agree with record declaration.
+< tests/test06.tig:21.9:Type of field 'right' initializer does not agree with record declaration.
+< tests/test06.tig:27.20:Expected binding for field 'key', found binding for 'val'.
+< tests/test06.tig:27.29:Expected binding for field 'val', found binding for 'key'.
+< tests/test06.tig:39.11:Type of array initializer does not agree with array declaration.
+< tests/test06.tig:39.8:Type of rvalue in assignment expression does not match lvalue.
+< tests/test06.tig:41.20:Type of array initializer does not agree with array declaration.
+< tests/test06.tig:41.11:Type of array initializer does not agree with array declaration.
+< tests/test06.tig:41.8:Type of rvalue in assignment expression does not match lvalue.
+---
+> test06.tig:16.23:Variable (val) is of an unknown type, or the variable has not been defined.
+> test06.tig:19.21:Variable (t) is of an unknown type, or the variable has not been defined.
+> test06.tig:19.13:Type of field `right' initializer does not agree with record declaration.
+> test06.tig:23.13:Type of field `val' initializer does not agree with record declaration.
+> test06.tig:21.9:Type of field `right' initializer does not agree with record declaration.
+> test06.tig:27.20:Expected binding for field `key', found binding for `val'.
+> test06.tig:27.29:Expected binding for field `val', found binding for `key'.
+> test06.tig:39.11:Type of array initializer does not agree with array declaration.
+> test06.tig:39.8:Type of rvalue in assignment expression does not match lvalue.
+> test06.tig:41.20:Type of array initializer does not agree with array declaration.
+> test06.tig:41.11:Type of array initializer does not agree with array declaration.
+> test06.tig:41.8:Type of rvalue in assignment expression does not match lvalue.

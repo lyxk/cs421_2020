@@ -1,0 +1,16 @@
+[autoloading done]
+[attempting to load plugin $/grm-ext.cm]
+[plugin $/grm-ext.cm loaded successfully]
+[attempting to load plugin $/mlyacc-tool.cm]
+[plugin $/mlyacc-tool.cm loaded successfully]
+[New bindings added.]
+tests/test11.tig:46.10:syntax error: inserting  LPAREN
+tests/test11.tig:51.9:syntax error: inserting  LPAREN
+tests/test11.tig:55.35:syntax error: inserting  LPAREN
+tests/test11.tig:58.5:syntax error: inserting  LPAREN
+tests/test11.tig:62.5:syntax error: replacing  ASSIGN with  SEMICOLON
+tests/test11.tig:84.4:syntax error: replacing  ID with  FOR
+tests/test11.tig:98.2:syntax error found at EOF
+
+uncaught exception Error
+  raised at: parsetest.sml:18.47-18.61

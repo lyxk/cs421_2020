@@ -1,0 +1,29 @@
+[autoloading done]
+[attempting to load plugin $/lex-ext.cm]
+[plugin $/lex-ext.cm loaded successfully]
+[attempting to load plugin $/mllex-tool.cm]
+[plugin $/mllex-tool.cm loaded successfully]
+[New bindings added.]
+ID(l)     2
+ID(et)     4
+LET   8
+IN   13
+IF   19
+MINUS   22
+INT(1)   23
+NEQ   25
+INT(0)   28
+THEN   30
+INT(1)   35
+PLUS   36
+INT(2)   37
+TIMES   38
+INT(3)   39
+ELSE   41
+INT(4)   46
+DIVIDE   47
+INT(5)   48
+MINUS   49
+INT(6)   50
+END   97
+EOF   100

@@ -1,0 +1,5 @@
+test04.tig:7.5:BREAK expression found outside of WHILE or FOR loop.
+test04.tig:11.10:Attempt to assign to a FOR loop induction variable.
+test04.tig:13.13:Attempt to assign to a FOR loop induction variable.
+test04.tig:20.5:BREAK expression found outside of WHILE or FOR loop.
+test04.tig:26.11:BREAK expression found outside of WHILE or FOR loop.

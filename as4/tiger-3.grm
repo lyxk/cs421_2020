@@ -1,0 +1,157 @@
+%%
+
+%term
+    EOF
+  | ID of string
+  | INT of int | STRING of string
+  | COMMA | COLON | SEMICOLON | LPAREN | RPAREN | LBRACK | RBRACK
+  | LBRACE | RBRACE | DOT
+  | PLUS | MINUS | TIMES | DIVIDE | EQ | NEQ | LT | LE | GT | GE
+  | AND | OR | ASSIGN
+  | ARRAY | IF | THEN | ELSE | WHILE | FOR | TO | DO | LET | IN | END | OF
+  | BREAK | NIL
+  | FUNCTION | VAR | TYPE
+  | UMINUS
+
+%nonterm  exp | program
+  | lvalue | nvexp | seqexp | noval | params | param | arithm | comp | boolop | recval | recvalue
+  | decs | tydec | vardec | fundec | ty | tyfields | tyfield | formals | formal | lvalues
+
+%nonassoc FUNCTION
+%nonassoc TYPE
+%nonassoc OF
+%nonassoc DO
+%nonassoc THEN
+%nonassoc ELSE
+%nonassoc ASSIGN
+%left OR
+%left AND
+%nonassoc EQ NEQ GT LT GE LE
+%left PLUS MINUS
+%left TIMES DIVIDE
+%left UMINUS
+
+
+%pos int
+%verbose
+%start program
+%eop EOF
+%noshift EOF
+
+%name Tiger
+
+%keyword WHILE FOR TO BREAK LET IN END FUNCTION VAR TYPE ARRAY IF THEN ELSE
+	DO OF NIL
+
+%prefer THEN ELSE LPAREN
+
+%value ID ("bogus")
+%value INT (1)
+%value STRING ("")
+
+%%
+
+program	: exp				()
+
+exp: lvalue 				()
+   | nvexp				()
+   | NIL				()
+   | LPAREN seqexp RPAREN		()
+   | noval				()
+   | INT				()
+   | STRING				()
+   | MINUS exp %prec UMINUS		()
+   | ID LPAREN params RPAREN		()
+   | arithm				()
+   | comp				()
+   | boolop				()
+   | ID LBRACE recval RBRACE		()
+   | ID LBRACK exp RBRACK OF exp 	()
+
+lvalue: ID				()
+      | lvalues 			()
+
+lvalues: ID DOT ID			()
+       | ID LBRACK exp RBRACK		()
+       | lvalues LBRACK exp RBRACK	()
+       | lvalues DOT ID			()
+
+nvexp: lvalue ASSIGN exp		()
+     | IF exp THEN exp			()
+     | IF exp THEN exp ELSE exp		()
+     | WHILE exp DO exp			()
+     | FOR ID ASSIGN exp TO exp DO exp	()
+     | BREAK				()
+     | LET decs IN seqexp END		()
+
+seqexp: exp				()
+      | exp SEMICOLON seqexp		()
+
+noval: LPAREN RPAREN			()
+     | LET decs IN END			()
+
+params: 				()
+     | param				()
+
+param: exp				()
+     | exp COMMA param			()
+
+arithm: exp PLUS exp			()
+      | exp MINUS exp			()
+      | exp TIMES exp			()
+      | exp DIVIDE exp			()
+
+comp: exp EQ exp			()
+    | exp NEQ exp			()
+    | exp GT exp			()
+    | exp LT exp			()
+    | exp GE exp			()
+    | exp LE exp			()
+
+boolop: exp AND exp			()
+      | exp OR exp			()
+
+recval: 				()
+      | recvalue			()
+
+recvalue: ID EQ exp			()
+        | ID EQ exp COMMA recvalue	()
+
+decs: 					()
+    | tydec decs			()
+    | vardec decs			()
+    | fundec decs			()
+    (* | tydec                   ( (A.TypeDec tydec)::nil )
+    | tydec vardec decs       ( (A.TypeDec tydec)::vardec::decs )
+    | tydec fundec decs       ( (A.TypeDec tydec)::(A.FunctionDec fundec)::decs )
+    | vardec decs			( vardec::decs )
+    | fundec			( (A.FunctionDec fundec)::nil )
+    | fundec tydec decs       ( (A.FunctionDec fundec)::(A.TypeDec tydec)::decs )
+    | fundec vardec decs      ( (A.FunctionDec fundec)::vardec::decs ) *)
+
+tydec: TYPE ID EQ ty			()
+      | TYPE ID EQ ty tydec  		()
+
+ty: ID					()
+  | LBRACE tyfields RBRACE		()
+  | ARRAY OF ID				()
+
+tyfields: 				()
+        | tyfield			()
+
+tyfield: ID COLON ID			()
+       | ID COLON ID COMMA tyfield  	()
+
+vardec: VAR ID ASSIGN exp		()
+      | VAR ID COLON ID ASSIGN exp	()
+
+fundec: FUNCTION ID LPAREN formals RPAREN EQ exp			()
+      | FUNCTION ID LPAREN formals RPAREN COLON ID EQ exp		()
+      | FUNCTION ID LPAREN formals RPAREN EQ exp fundec			()
+      | FUNCTION ID LPAREN formals RPAREN COLON ID EQ exp fundec	()
+
+formals: 				()
+      | formal				()
+
+formal:	ID COLON ID			()
+      | ID COLON ID COMMA formal	()

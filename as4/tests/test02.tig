@@ -1,0 +1,11 @@
+/* test02.tig --- nested sequences and empty let body */
+(let in end;
+ (f(x);
+  g(y);
+  ("hello\n\^Gworld";
+   --1073741823;
+   break
+  )
+ )
+)
+

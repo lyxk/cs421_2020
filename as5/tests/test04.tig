@@ -1,0 +1,36 @@
+/* test04.tig -- break and loop counter restrictions */
+let var y := 3
+    var x := "hello"
+    var z := 32
+in
+    3+2;
+    break;   /* error, not within loop */
+    for x := y to z do    /* loop counter x shadows local x, ok */
+      (z := x + 1;  /* ok, but does not affect stopping condition */
+       break;       /* ok */
+       x := z;      /* error, assigning to loop counter */ 
+       while y < z do
+         (x := 31415;  /* error, assigning to loop counter */
+          break;       /* ok */
+          y := x*x);    /* ok */
+       break;       /* still ok */
+       let var x := 42
+       in x := 88 end;  /* ok */
+       y := y - 1); /* ok */
+    break;          /* error, not within loop */
+    x := "world";   /* ok, local x is a string */
+    while y < z do
+       break;       /* ok */
+    while z >= y do
+       let function f() = 
+          break  /* TECHNICALLY an error, but quite subtle */
+       in break    /* ok */
+       end
+end
+/** Output:
+test04.tig:7.5:'break' statement permitted only in a loop
+test04.tig:11.10:Assignment to loop counter
+test04.tig:13.13:Assignment to loop counter
+test04.tig:20.5:'break' statement permitted only in a loop
+test04.tig:26.11:'break' statement permitted only in a loop
+ **/

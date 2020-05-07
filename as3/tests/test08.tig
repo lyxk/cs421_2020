@@ -1,0 +1,2 @@
+/* test08.tig -- non-associative operators */
+a = b < c

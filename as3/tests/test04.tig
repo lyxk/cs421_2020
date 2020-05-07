@@ -1,0 +1,4 @@
+/* test04.tig -- error -- unclosed let */
+let in
+let in
+end

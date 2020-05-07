@@ -1,0 +1,32 @@
+[autoloading done]
+[attempting to load plugin $/lex-ext.cm]
+[plugin $/lex-ext.cm loaded successfully]
+[attempting to load plugin $/mllex-tool.cm]
+[plugin $/mllex-tool.cm loaded successfully]
+[New bindings added.]
+LET   56
+TYPE   61
+ID(myint)     66
+EQ   72
+ID(int)     74
+TYPE   79
+ID(arrtype)     85
+EQ   93
+ARRAY   95
+OF   101
+ID(myint)     104
+VAR   112
+ID(arr1)     116
+COLON   120
+ID(arrtype)     121
+ASSIGN   129
+ID(arrtype)     132
+LBRACK   140
+INT(10)   141
+RBRACK   143
+OF   145
+INT(0)   148
+IN   150
+ID(arr1)     154
+END   159
+EOF   162

@@ -1,0 +1,2 @@
+test03.tig
+transdec (env, tenv, A.VarDec( { var={name, escape}, typ=SOME (typ_of_var, typ_pos), init, pos } ) )

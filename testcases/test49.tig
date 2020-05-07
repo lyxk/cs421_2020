@@ -1,0 +1,13 @@
+/* valid type decs */
+
+let
+	type i =int
+
+	var t:=0
+
+	type a = b
+	type b = c
+	type c = i
+		
+in
+end

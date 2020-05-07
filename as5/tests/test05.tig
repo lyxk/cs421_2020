@@ -1,0 +1,59 @@
+/* test05.tig -- comparisons of strings, ints, records, arrays */
+let 
+    /* simple mutually recursive types */
+    type node = {datum:int, children:children}
+    type children = array of node
+ 
+    var s1 := "aoe"
+    var s2 := "snt"
+    var i1 := 42
+    var i2 := 76
+
+    var r1 : node := nil
+    var r2 := node {datum = 3,
+                    children = children[5] of nil}  /* ok */
+    var r3 := r2
+
+    var a1 := children [3] of r2
+    var a2 := children [9] of r1
+    var a3 := a1
+in
+    i1 =  s1;  /* err */
+    r1 <> nil;
+    r1 = a1;  /* err */
+    s1 = a1;  /* err */
+
+    r2.children[0] := r2;   /* creating a loop, ok */
+
+    a3 := r2.children;  /* ok */
+    a3 := a1 := a2;     /* err, assign returns no value */
+
+    s1 =  s2;
+    s1 <> s2;
+    s1 >  s2;
+    s1 <  s2;
+    s1 >= s2;
+    s1 <= s2;
+    
+    i1 =  i2;
+    i1 <> i2;
+    i1 >  i2;
+    i1 <  i2;
+    i1 >= i2;
+    i1 <= i2;
+    
+    r2 =  r3;
+    r2 <> r1;
+    r2 >  r3;  /* err */
+    r2 <  r1;  /* err */
+    r2 >= r3;  /* err */
+    r2 <= r1;  /* err */
+    
+    a2 =  a3;
+    a2 <> a1;
+    a2 >  a3;  /* err */
+    a2 <  a1;  /* err */
+    a2 >= a3;  /* err */
+    a2 <= a1;  /* err */
+    ()
+end

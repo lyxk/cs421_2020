@@ -1,0 +1,12 @@
+/* test01.tig -- nested scopes and shadowing */
+let var x := 5
+in let var x := 6
+       var y := 7
+   in x+y
+   end     /* sequence must return type of last expression in body */
+   + x
+   + y     /* ERROR, undefined variable y */
+end
+/** Output:
+test01.tig:8.6:undefined variable y
+ **/

@@ -1,0 +1,44 @@
+[autoloading done]
+[attempting to load plugin $/lex-ext.cm]
+[plugin $/lex-ext.cm loaded successfully]
+[attempting to load plugin $/mllex-tool.cm]
+[plugin $/mllex-tool.cm loaded successfully]
+[New bindings added.]
+LET   44
+TYPE   49
+ID(rectype)     55
+EQ   63
+LBRACE   65
+ID(name)     66
+COLON   70
+ID(string)     71
+COMMA   77
+ID(age)     79
+COLON   82
+ID(int)     83
+RBRACE   86
+VAR   89
+ID(rec1)     93
+COLON   97
+ID(rectype)     98
+ASSIGN   106
+ID(rectype)     109
+LBRACE   117
+ID(name)     118
+EQ   122
+STRING(Nobody)     123
+COMMA   131
+ID(age)     133
+EQ   136
+INT(1000)   137
+RBRACE   141
+IN   143
+ID(rec1)     147
+DOT   151
+ID(name)     152
+ASSIGN   157
+STRING(Somebody)     160
+SEMICOLON   170
+ID(rec1)     173
+END   178
+EOF   181

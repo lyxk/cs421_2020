@@ -1,0 +1,8 @@
+/* test02.tig -- syntax ok */
+/* empty let expressions, nested */
+let
+in
+  let in end;
+  let in let in end end;
+  let in let in let in end end end
+end

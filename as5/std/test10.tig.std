@@ -1,0 +1,7 @@
+test10.tig:3.14:Undefined identifier in function call.  Assuming function returns INT.
+test10.tig:4.14:Type mismatch in parameter 1.
+test10.tig:13.8:Type mismatch in parameter 2.
+test10.tig:13.8:Type mismatch in parameter 1.
+test10.tig:12.6:Type mismatch in parameter 1.
+test10.tig:11.4:Type mismatch in parameter 1.
+test10.tig:17.8:Primitive (non-array/record) cycle detected in recursive type definition; Type forced to INT. (c).

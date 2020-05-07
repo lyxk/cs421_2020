@@ -1,0 +1,36 @@
+[autoloading done]
+[attempting to load plugin $/lex-ext.cm]
+[plugin $/lex-ext.cm loaded successfully]
+[attempting to load plugin $/mllex-tool.cm]
+[plugin $/mllex-tool.cm loaded successfully]
+["/home/classes/cs421/src/bin/ml-ulex" --ml-lex-mode "tiger.lex"]
+[ml-ulex: parsing]
+[ml-ulex: DFA gen]
+ 121 states in full DFA
+[ml-ulex: SML gen]
+[parsing (sources.cm):tiger.lex.sml]
+[compiling (sources.cm):tiger.lex.sml]
+[code: 130979, data: 795, env: 1685 bytes]
+[New bindings added.]
+LET   44
+TYPE   49
+ID(arrtype)     55
+EQ   63
+ARRAY   65
+OF   71
+ID(int)     74
+VAR   79
+ID(arr1)     83
+COLON   87
+ID(arrtype)     88
+ASSIGN   96
+ID(arrtype)     99
+LBRACK   107
+INT(10)   108
+RBRACK   110
+OF   112
+INT(0)   115
+IN   117
+ID(arr1)     121
+END   126
+EOF   129

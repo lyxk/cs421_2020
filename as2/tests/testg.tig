@@ -1,0 +1,4 @@
+var s2 := "a long, \
+          \long, \
+          \long string"
+var s3 := "hopefully short \" \n"

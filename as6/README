@@ -1,0 +1,64 @@
+Name: Yangxiaokang Liu
+NetID: yl2335
+
+(1) What you have done so far
+
+  I implemented the Maximal Munch algorithm mentioned in Chapter 9.
+
+  1. munchExp covers all possible patterns and return the register used to store the expression's value.
+  2. munchStm covers all possible patterns and generates x-86 instructions for the corresponding instruction.
+  3. Division needs some special handling.
+      (a) Move constant $0 into %edx (the most significant 32 bits)
+      (b) Move dividend (munchExp e1) into %eax (the leas significant 32 bits)
+      (c) Perform integer division ( concat (%edx, %eax) / munchExp e2) and store the quotient int %eax and the remainder in %edx.
+  4. prologue performs pushes base pointer onto stack and creates space for the current stack. It then pushes all the callee saved registers onto the stack.
+  5. epilogue restores callee saved registers from the stack and performs the reverse of the view shift.
+  6. procEntryExit uses allocation table given by the RegAlloc module to translate all the temporaries into real registers and add prologue & epilogue to function definitions.
+
+ I also implemented the register.sml interface
+
+ 1. specialregs are precolored registers.
+ 2. calleesaves are callee-saved registers.
+ 3. callersaves are pseudoregisters, which are passed to RegAlloc as colors.
+ 4. truecallersaves are registers that are not used in RegAlloc.
+ 5. initial is the table handed to RegAlloc.
+
+(2) How to use? 
+
+  1. make
+  2. ./tigcc {filename}.tig [{progname}]
+  3. ./prog or ./{progname} (If {progname} is specified in step 2)
+
+(3) Which groups you have tested your code with (e.g., if you are doing IG then you might list CG/netid1 and RA/netid2)
+    
+    I ran my CodeGen with ig/ys542 and ra/rc2335. It produces resonable assembly code with real register names. 
+    The code passed all testcases. 
+
+(4) Anything other groups need to know to integrate with your code
+
+    For CodeGen part, the required files are assem.sml, canon.sml (which hasn't been modified), codegen.sml, register.sml.
+
+(5) Any assumptions you have made about your current implementations
+
+    (a) The correctness of the ItreeGen part, including array bounds checking and nil record checking.     
+    (b) The correctness of the RegAlloc part. Spilling is done in codegen.sml and %ecd and %edx are used for spilling. 
+    (d) RegAlloc part's available colors are callee-svaed registers and all pseudo registers (f1, .., f40).
+    (e) The following frame layout for procEntryExit. I set R.NPSEUDOREGS = 40 in register.sml
+            ingoing arguments
+            return address
+        fp -> %ebp
+            pseudo registers
+            local variables
+            callee-saved registers
+            outgoing arguments
+
+(6) What desirable features you would like other groups to work on
+
+    None. I'm not sure what changes need to be made if spilling is done in RegAlloc part.
+
+(7) Files you have changed or added beyond the expected ones
+
+    None.
+
+(8) How to use?
+    

@@ -1,0 +1,13 @@
+/* test03.tig -- syntax ok -- nested Lvalues */
+a[1].
+b[2].
+c.
+d.
+e[3].
+f.
+g[7]
+[8]
+[9]
+:=
+42
+

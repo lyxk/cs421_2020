@@ -1,0 +1,6 @@
+test07.tig:6.5:Result type of function body does not match declared return type.
+test07.tig:9.5:Result type of function body does not match declared return type.
+test07.tig:18.12:Type of rvalue in assignment expression does not match lvalue.
+test07.tig:25.11:Type of rvalue in assignment expression does not match lvalue.
+test07.tig:32.10:Type of rvalue in assignment expression does not match lvalue.
+test07.tig:34.8:Identifier is not bound to a function. Assuming function returns INT.

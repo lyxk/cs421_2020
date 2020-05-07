@@ -1,0 +1,16 @@
+[autoloading done]
+[attempting to load plugin $/lex-ext.cm]
+[plugin $/lex-ext.cm loaded successfully]
+[attempting to load plugin $/mllex-tool.cm]
+[plugin $/mllex-tool.cm loaded successfully]
+[attempting to load plugin $/grm-ext.cm]
+[plugin $/grm-ext.cm loaded successfully]
+[attempting to load plugin $/mlyacc-tool.cm]
+[plugin $/mlyacc-tool.cm loaded successfully]
+[New bindings added.]
+tests/test03.tig:16.9:Type mismatch in equality comparison "="
+tests/test03.tig:17.9:Type of rvalue in assignment expression does not match lvalue.
+tests/test03.tig:25.14:Type of rvalue in assignment expression does not match lvalue.
+tests/test03.tig:30.17:Type mismatch in inequality comparison "<>"
+tests/test03.tig:34.15:Illegal assignment of NIL to declaration of a variable of an unknown type.
+tests/test03.tig:40.13:Type mismatch in equality comparison "="

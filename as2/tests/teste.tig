@@ -1,0 +1,5 @@
+let 
+  var s1 := "string"
+  var s7 := "/*"
+in
+end

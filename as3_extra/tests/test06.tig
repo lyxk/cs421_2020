@@ -1,0 +1,7 @@
+/* test06.tig -- colons as terminators instead of separators */
+(
+(42; -6;);
+function_call (with, extra, comma,)
+)
+
+

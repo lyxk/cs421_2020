@@ -1,0 +1,55 @@
+[autoloading done]
+[attempting to load plugin $/lex-ext.cm]
+[plugin $/lex-ext.cm loaded successfully]
+[attempting to load plugin $/mllex-tool.cm]
+[plugin $/mllex-tool.cm loaded successfully]
+[attempting to load plugin $/grm-ext.cm]
+[plugin $/grm-ext.cm loaded successfully]
+[attempting to load plugin $/mlyacc-tool.cm]
+[plugin $/mlyacc-tool.cm loaded successfully]
+[New bindings added.]
+let
+var N := 8
+[[[ BEGIN tydecs
+type intArray = array of int
+]]] END tydecs
+var row := intArray[N] of 0
+var col := intArray[N] of 0
+var diag1 := intArray[((N+N)-1)] of 0
+var diag2 := intArray[((N+N)-1)] of 0
+[[[ BEGIN fundecs
+function printboard() =
+(for i := 0 to (N-1) do
+(for j := 0 to (N-1) do
+print(if (col[i]=j)
+then " O"
+else " .");
+print("
+"));
+print("
+"))
+function try(c : int) =
+(for i := 0 to c do
+print(".");
+print("
+");
+flush();
+if (c=N)
+then printboard()
+else for r := 0 to (N-1) do
+if if if (row[r]=0)
+then (diag1[(r+c)]=0)
+else 0
+then (diag2[((r+7)-c)]=0)
+else 0
+then (row[r] := 1;
+diag1[(r+c)] := 1;
+diag2[((r+7)-c)] := 1;
+col[c] := r;
+try((c+1));
+row[r] := 0;
+diag1[(r+c)] := 0;
+diag2[((r+7)-c)] := 0))
+]]] END fundecs
+
+in (try(0)) end

@@ -1,0 +1,6 @@
+test03.tig:16.9:Type mismatch in equality comparison "=".
+test03.tig:17.9:Type of rvalue in assignment expression does not match lvalue.
+test03.tig:25.14:Type of rvalue in assignment expression does not match lvalue.
+test03.tig:30.17:Type mismatch in inequality comparison "<>".
+test03.tig:34.9:Illegal assignment of NIL to declaration of a variable of an unknown type.
+test03.tig:40.13:Type mismatch in equality comparison "=".

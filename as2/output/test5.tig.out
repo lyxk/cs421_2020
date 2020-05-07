@@ -1,0 +1,62 @@
+[autoloading done]
+[attempting to load plugin $/lex-ext.cm]
+[plugin $/lex-ext.cm loaded successfully]
+[attempting to load plugin $/mllex-tool.cm]
+[plugin $/mllex-tool.cm loaded successfully]
+[New bindings added.]
+LET   37
+TYPE   61
+ID(intlist)     66
+EQ   74
+LBRACE   76
+ID(hd)     77
+COLON   79
+ID(int)     81
+COMMA   84
+ID(tl)     86
+COLON   88
+ID(intlist)     90
+RBRACE   97
+TYPE   121
+ID(tree)     126
+EQ   131
+LBRACE   132
+ID(key)     133
+COLON   136
+ID(int)     138
+COMMA   141
+ID(children)     143
+COLON   151
+ID(treelist)     153
+RBRACE   161
+TYPE   163
+ID(treelist)     168
+EQ   177
+LBRACE   179
+ID(hd)     180
+COLON   182
+ID(tree)     184
+COMMA   188
+ID(tl)     190
+COLON   192
+ID(treelist)     194
+RBRACE   202
+VAR   205
+ID(lis)     209
+COLON   212
+ID(intlist)     213
+ASSIGN   221
+ID(intlist)     224
+LBRACE   232
+ID(hd)     234
+EQ   236
+INT(0)   237
+COMMA   238
+ID(tl)     240
+EQ   242
+NIL   244
+RBRACE   248
+IN   252
+ID(lis)     256
+END   260
+EOF   263

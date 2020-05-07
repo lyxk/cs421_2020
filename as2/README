@@ -1,0 +1,34 @@
+NetID: yl2335
+Name: Yangxiaokang Liu
+
+In INITIAL state, if a reserved word is encountered, return the corresponding token. If a double quote is encountered, 
+enter the STRING state. If /* is encountered, enter the comment state. Otherwise, print error position and message.
+
+Apart from INITIAL state, four additional states are defined.
+
+1. STRING
+Upon entering the STRING state, three things are done
+    a. Set strMode to true
+    b. Clear currString
+    c. Save yypos to strStart
+In STRING state, whenever a printable character or space is encountered, append it to currString. When \n or \t is
+encountered, call err to print error position and message. If \ is read, enter STRING_ESCAPE state.
+
+2. STRING_ESCAPE
+In STRING_ESCAPE state (the first \ has already been read), n, t, \, ", ^c, ddd, f___f\ are permitted, otherwise 
+print error position and message. For \^c and \ddd, calculate the corresponding ASCII code first, then use 
+String.str( chr ( ascii_code ) ) to get the string and append to currString. If space or \n is encountered, enter
+STRING_ESCAPE_MULTI state, which means the string can span multiple lines.
+
+3. STRING_ESCAPE_MULTI
+In STRING_ESCAPE_MULTI state, only \n and space are permitted, if \ is read, return back to STRING state. Everything
+inside STRING_ESCAPE_MULTI state is ignored and not counted in the currString.
+
+4. COMMENT
+In COMMENT state, everything is ignored, until the next */ is read, ending the COMMENT state and return back to INITIAL.
+
+EOF Handling
+
+For EOF handling, since \n always preceeds EOF token, there is no need to check strMode again since \n will trigger error
+in STRING state. The only check performed is whether COMMENT is closed, if not, print an error message, otherwise just
+return EOF token.

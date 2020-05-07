@@ -1,0 +1,16 @@
+#!/bin/sh
+
+set -e
+
+out=prog
+if [ -z "$1" ]; then
+  echo -e "Usage: $0 {filename}.tig [outfile]\noutfile is optional and defaults to \"$out\""
+  exit 1
+fi
+
+if ! [ -z "$2" ]; then
+  out="$2"
+fi
+
+sml @SMLload tigcc.$(sml @SMLsuffix) "$1"
+gcc -m32 -O0 -o "$out" runtime.c "$1".s

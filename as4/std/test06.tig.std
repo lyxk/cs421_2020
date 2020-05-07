@@ -1,0 +1,77 @@
+let
+[[[ BEGIN tydecs
+type any = {any : int}
+]]] END tydecs
+var buffer := getchar()
+[[[ BEGIN fundecs
+function readint(any : any)  : int =
+let
+var i := 0
+[[[ BEGIN fundecs
+function isdigit(s : string)  : int =
+if (ord(buffer)>=ord("0"))
+then (ord(buffer)<=ord("9"))
+else 0
+function skipto() =
+while if (buffer=" ")
+then 1
+else (buffer="
+") do
+buffer := getchar()
+]]] END fundecs
+
+in (skipto();
+any.any := isdigit(buffer);
+while isdigit(buffer) do
+(i := (((i*10)+ord(buffer))-ord("0"));
+buffer := getchar());
+i) end
+]]] END fundecs
+[[[ BEGIN tydecs
+type list = {first : int, rest : list}
+]]] END tydecs
+[[[ BEGIN fundecs
+function readlist()  : list =
+let
+var any := any{any  = 0}
+var i := readint(any)
+
+in (if any.any
+then list{first  = i, rest  = readlist()}
+else Nil) end
+function merge(a : list, b : list)  : list =
+if (a=Nil)
+then b
+else if (b=Nil)
+then a
+else if (a.first<b.first)
+then list{first  = a.first, rest  = merge(a.rest, b)}
+else list{first  = b.first, rest  = merge(a, b.rest)}
+function printint(i : int) =
+let
+[[[ BEGIN fundecs
+function f(i : int) =
+if (i>0)
+then (f((i/10));
+print(chr(((i-((i/10)*10))+ord("0")))))
+]]] END fundecs
+
+in (if (i<0)
+then (print("-");
+f((0-i)))
+else if (i>0)
+then f(i)
+else print("0")) end
+function printlist(l : list) =
+if (l=Nil)
+then print("
+")
+else (printint(l.first);
+print(" ");
+printlist(l.rest))
+]]] END fundecs
+var list1 := readlist()
+var list2 := (buffer := getchar();
+readlist())
+
+in (printlist(merge(list1, list2))) end

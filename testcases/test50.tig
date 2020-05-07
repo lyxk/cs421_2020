@@ -1,0 +1,29 @@
+/* Nested Comments, Strings, Etc., For Testing Lex */
+
+/* It's up to you to determine what your output should be from this
+   program, I'm very likely to use this to test your programs!
+ */
+
+let 
+
+/*  
+
+  /*   */        Are you handling nested comments?
+  !!
+  "              This shouldn't mess you up.
+*/
+
+  var s1 := /* ... */ "string"
+  var s2 := "a long, \
+            \long, \
+	    \long string"
+  var s3 := "hopefully short \" \n"
+  var s4 := "\119\101\108\108"            /* do well on this */
+  var s5 := "\t\t\\t"
+  var s6 := "\^G\^G\^G"                   /* better be noisy */
+  var s7 := "/*"
+
+in
+  if -1 <> 0 then 1+2*3 else 4/5-6   /* let's throw in some keywords and ops */
+end
+

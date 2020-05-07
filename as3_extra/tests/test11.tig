@@ -1,0 +1,98 @@
+(  /* cascading them all together... */
+/* test01.tig -- syntax ok */
+let
+type t
+= {hd : 
+
+
+int, tl: t}
+
+type 
+v 
+= 
+{}   /* empty record ok */
+
+in 
+3 + - 5  /* unary minus */
+end;
+/* test02.tig -- syntax ok */
+/* empty let expressions, nested */
+let
+in
+  let in end;
+  let in let in end end;
+  let in let in let in end end end
+end;
+/* test03.tig -- syntax ok -- nested Lvalues */
+a[1].
+b[2].
+c.
+d.
+e[3].
+f.
+g[7]
+[8]
+[9]
+:=
+42
+;
+/* test04.tig -- error -- unclosed let */
+let in
+let in
+end;
+/* test05.tig -- error line 4 */
+(
+x := 3 + - 5;
+y := (3 +) - 5
+);
+
+/* test06.tig -- colons as terminators instead of separators */
+/* this is correct..? */
+(42; -6;);
+/* test07.tig */
+/* this is ok? */
+
+function_call (with, extra, comma,);
+
+/* test08.tig -- non-associative operators */
+a = b < c;
+/* test09.tig -- non-Lvalue used on left side of := */
+(
+x := 42;
+f() := 42
+);
+/* A program to solve the 8-queens problem */
+
+let
+    var N := 8
+
+    type intArray = array of int
+
+    var row := intArray [ N ] of 0
+    var col := intArray [ N ] of 0
+    var diag1 := intArray [N+N-1] of 0
+    var diag2 := intArray [N+N-1] of 0
+
+    function printboard() =
+       (for i := 0 to N-1
+	 do (for j := 0 to N-1 
+	      do print(if col[i]=j then " O" else " .");
+	     print("\n"));
+         print("\n"))
+
+    function try(c:int) = 
+  (far i:= 0 to c do print("."); print("\n"); flush();  /* err */
+     if c=N
+     then printboard()
+     else for r := 0 to N-1
+	   do if row[r]=0 & diag1[r+c]=0 & diag2[r+7-c]=0
+	           then (row[r]:=1; diag1[r+c]:=1; diag2[r+7-c]:=1;
+		         col[c]:=r;
+	                 try(c+1);
+			 row[r]:=0; diag1[r+c]:=0; diag2[r+7-c]:=0)
+  )
+
+ in try(0)
+end
+	
+)

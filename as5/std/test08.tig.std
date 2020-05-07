@@ -1,0 +1,3 @@
+test08.tig:22.11:Undefined identifier in function call.  Assuming function returns INT.
+test08.tig:21.6:Type mismatch between THEN and ELSE clauses.  Assuming expression is an INT.
+test08.tig:19.5:Result type of function body does not match declared return type.

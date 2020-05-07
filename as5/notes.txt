@@ -1,0 +1,177 @@
+Now, calm down and ask your self a few questions.
+
+1. Why are you here?
+
+I want to study compiler now and I hope I can finish it before Wednesday
+so that I can get enough time to work on NLP assignment and HPC midterm.
+
+2. What's your schedule?
+
+Finish compiler before Wednesday, finish NLP before Friday. Start reviewing HPC
+on Saturday and prepare for the midterm.
+
+g (A.RecordExp { typ, fields, pos })
+*********************************************************************************
+3. What is the problem that got you stuck here?
+
+I'm trying to check if a record value expression is valid.
+
+A record value expression is valid if 
+
+1. Its type exists in the type environment
+2. The field names are the same as the field names in the type environment
+3. The type of each expression match with the type of of the corresponding
+field
+
+4. How do you plan to use typ?
+
+typ is of type S.symbol, we can use typ to lookup it's actual type in tenv,
+which is 
+var recty = S.look(tenv, typ)
+
+recty is of T.ty, more specifically, it should be constructed using
+T.RECORD ([ (sa, ta), (sb, tb), (sc, tc) ], ref ())
+
+5. How do you plan to check if fields conform to the signature specified in
+T.RECORD ([ (sa, ta), (sb, tb), (sc, tc) ], ref ())
+
+fields is of type efield list
+efield is just (symbol * exp * pos)
+
+fields should look something like this
+[ (sa', ea, pa), (sb', eb, pb), (sc', ec, pc) ]
+
+What I would like to do is to check 
+
+sa ?= sa', sb ?= sb', sc ?= sc'
+ta ?= type(ea), tb ?= type(eb), tc ?= type(ec)
+
+How to get type(ea), type(eb), type(ec)?
+
+6. How to get the type of an expression? Are these expressions specific or
+general?
+
+I think at least we can use 
+type ea = #ty( transexp (env, tenv) ea )
+type eb = #ty( transexp (env, tenv) eb )
+
+7. What is checkField?
+
+Checkfield is a function used to check whether (sa, ta) matches (sa', ea, pa)
+It's very obvious that pa is useless. Our job is to compare sa and sa', ta and
+type (ea).
+
+Comparing sa and sa' is easy, how do we compute ta and ( transexp (env, tenv) ea )
+
+The return type of transexp (env, tenv) ea is 
+{ exp: ir_code, ty: T.ty }
+-----------------------------------------------------------------------------------
+
+h (A.FieldVar (v,id,pos))
+***********************************************************************************
+
+-----------------------------------------------------------------------------------
+
+transdec ( env, tenv, A.VarDec(declist) )
+***********************************************************************************
+VarDec of {var: vardec, typ: (symbol * pos) option, init: exp, pos: pos}
+
+VarDec of { var: {name: symbol, escape: bool ref}, typ: (symbol * pos) option, init: exp, pos: pos }
+
+var d:int :=0
+
+A.VarDec { var = { name = ("d", 6), escape = ref true }, typ = SOME ("int", 8), init: A.IntExp 0 }
+
+1. What's the purpose of transdec function ?
+
+For VarDec, I think the transdec function will only produce a new env (probably called env')
+
+type env = enventry Symbol.table
+T.VARentry { access = (), ty = T.INT }
+
+-----------------------------------------------------------------------------------
+
+They will encounter undefined type or function identifiers
+transTy for recursive record types
+transExp(body) for recursive functions
+
+The solution for a set of mutually recursive things (types or functions)
+t1, t2, ..., tn is to 
+
+1. put all the headers in the environment first, resulting
+in an environment e1. 
+2. process all the bodies in the environment e1.
+3. during processing of the bodies it will be necessary to look up some of
+the newly defined names, but they will in fact be there - though some of them
+may be empty headers without bodies.
+
+type a = b
+type b = c
+type c = int
+
+ra = ref NONE
+rb = ref NONE
+rc = ref NONE
+S.enter ( tenv, sa, T.NAME (sa, ref NONE) )
+S.enter ( tenv, sb, T.NAME (sb, ref NONE) )
+S.enter ( tenv, sc, T.NAME (sc, ref NONE) )
+(ty option) ref
+rc := T.INT
+rb = transTy A.
+
+transdec (env, tenv, A.TypeDec(declist))
+***********************************************************************************
+1. handle recursive functions
+2. handle functions w/wo a result
+3. handle undeclared type identifiers
+4. check that the body expression matches the declared result type
+
+
+T.NAME of Symbol.symbol * (ty option) ref
+
+fundec = 
+{
+    name: S.symbol, 
+    params: formals list,
+    result: (symbol * pos) option,
+    body: A.exp,
+    pos: A.pos
+}
+
+formals = {
+    var: vardec, 
+    typ: symbol, 
+    pos: pos
+}
+
+vardec = {
+    name: symbol, 
+    escape: bool ref
+}
+
+params may look something like this
+
+[ 
+    { var = { name = sa, escape = ref true }, typ = T.INT , pos = 10 }.
+    { var = { name = sb, escape = ref false }, typ = T.STRING, pos = 12}
+]
+
+A.FunctionDec [ {name, params, body, pos, result = SOME(rt, pos)} ]
+
+first deal with return type
+
+entry is of type 
+{level: level, label: label, formals: ty list, result: ty}
+
+/* define a recursive function */
+let
+
+/* calculate n! */
+function nfactor(n: int): int =
+		if  n = 0 
+			then 1
+			else n * nfactor(n-1)
+
+in
+	nfactor(10)
+end

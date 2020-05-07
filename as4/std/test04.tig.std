@@ -1,0 +1,27 @@
+if if if a
+then (0-b)
+else 0
+then if a
+then 1
+else b
+else if c
+then 1
+else d
+then 1
+else if if if c
+then 1
+else d
+then if d
+then 1
+else e
+else if f
+then g
+else 0
+then if if if e
+then f
+else 0
+then 1
+else g
+then 42
+else 43
+else 0

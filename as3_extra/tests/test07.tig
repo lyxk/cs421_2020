@@ -1,0 +1,7 @@
+/* test07.tig --- the array creation ambiguity */
+/* THIS SYNTAX IS OK,
+   but there is possibly an ambiguity between reducing
+      myarray[10] to an lvalue, then exp
+   and shifting the OF.
+ */
+x := myarray [10] of "hi"

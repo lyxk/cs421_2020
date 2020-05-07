@@ -1,0 +1,29 @@
+Name: Yangxiaokang Liu
+NetID: yl2335
+
+I matched the public testcases but I'm still very confused about T.NAME. 
+
+I think the most difficult part is recursive type declaration (self recursive and mutually recursive). It seems to me that this
+self recursion can never end for a record type like type list = { hd : int, tl : list }. The corresponding type inside tenv would
+grow bigger and bigger. The current type will referece the previous type and would never end.
+
+So I'm quite confused if this would cause memory problems or my implementation is wrong.
+
+I'm also confused about why we need T.NAME of (S.symbol * T.ty option ref) instead of (S.symbol * T.ty option). I tried comment 
+out the assignment statement to the reference variable in actual_ty and it doesn't bring changes in the output.
+
+For recursive type declarations. I used enterheader function to enter all empty type headers into tenv. This would produce a new 
+type environment tenv'. Then I called transty function on tenv' and update the entries in tenv' to get the final type environment.
+
+For recursive function declarations. I entered function headers first and then entered the formal parameters, finally I evaluated 
+the body of the function and check if the type is consistent with the declaration.
+
+For break statements, I maintained a global variable to count nested loops. Upon entering a function expression, I pushed the current
+count into a list and set the current count to 0 to prevent break statement in a function without loops. The original count is 
+recovered when the function ends.
+
+I think I understand the most part of this assignment except for recursive declarations and type checkings. For example, when checking
+a recurisive list I feel that the corresponding type would change depending on how long the list is.
+
+
+

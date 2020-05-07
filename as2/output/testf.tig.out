@@ -1,0 +1,19 @@
+[autoloading done]
+[attempting to load plugin $/lex-ext.cm]
+[plugin $/lex-ext.cm loaded successfully]
+[attempting to load plugin $/mllex-tool.cm]
+[plugin $/mllex-tool.cm loaded successfully]
+[New bindings added.]
+VAR   2
+ID(s4)     6
+ASSIGN   9
+STRING(well)     12
+VAR   31
+ID(s5)     35
+ASSIGN   38
+STRING(		\t)     41
+VAR   51
+ID(s6)     55
+ASSIGN   58
+STRING()     61
+EOF   72

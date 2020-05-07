@@ -1,0 +1,16 @@
+/* test01.tig -- syntax ok */
+let
+type t
+= {hd : 
+
+
+int, tl: t}
+
+type 
+v 
+= 
+{}   /* empty record ok */
+
+in 
+3 + - 5  /* unary minus */
+end

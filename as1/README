@@ -1,0 +1,46 @@
+1. max = fn : int list -> int
+    max is a helper function which takes in an int list and returns the max element in the list, it's used in maxargs and maxargs_exp to determine the longest print list.
+
+2. maxargs = fn : stm -> int & maxargs_exp = fn : exp -> int
+    maxargs and maxargs_exp are two mutually recursive functions which takes in a stm/exp and returns the length of the longest print list in the stm/exp. When a print stm
+    is encountered, first evaluate the length of the list, then use maxargs_exp to recursively get each expression's longest list and use max function to compare them and 
+    determine which one is the longest. maxargs_exp calls it self recursively when it sees exps and compare to get the largest one. It also calls maxargs when it sees an
+    expression sequence and use max function to determine the length of the longest list.
+
+3. exception KeyNotFound of string
+    KeyNotFound is the type of exception raised when the corresponding variable cannot be found in the table.
+
+4. datatype entry = ENTRY of string * int
+    entry is an alias for (string * int) for convenience
+
+5. lookup = fn : id * entry list -> int
+    lookup is a function which takes an id and a table (entry list) and checks if that id's information is stored in the table. If it's not found, KeyNotFound exception will
+    be raised, otherwise the latest value of the variable will be returned. The function looks for id linearly, from head to tail.
+
+6. update = fn : id * int * entry list -> entry list
+    update is a function which takes an id, a new value, an old table and returns a new table. It just appends a new entry to the head of the table and returns the table
+    after the append.
+
+7. interp_stm = fn : stm * entry list -> entry list
+    interp_stm takes in a stm and a table and produces a new table. There are 3 cases.
+    a. If the stm itself can be decomposed into two stms, execute the first stm, update the table, and execute the second stm
+    b. If the stm is an assignment stm, it calls interp_exp to evaluate the expression (and get a new table) and use the result of the evaluation to update the new table.
+    c. If the stm is a print stm, it prints a newline when the list is empty. If the list is not empty, call interp_exp to evaluate the first stm (and also get a new table), 
+       print the result and a space and recursively call itself on the rest of the print list.
+
+8. interp_exp = fn : exp * entry list -> int * entry list
+    interp_exp takes in an exp and a table and returns the evaluation of the exp and a new table (because there might be a stm inside the exp). There are 4 cases.
+    a. If the exp is a constant, just return the constant and the table
+    b. If the exp is a variable, lookup the value in the table and return it
+    c. If the exp is an arithmetic operation, compute the operands recursively and evaluate the expression according to the operator
+    d. If the exp is an expression sequence, call interp_stm and get the new table and use that new table for evaluating the expression
+
+9. interp = fn : stm -> unit
+    A wrapper for interp_stm, returns unit and handles KeyNotFound exception by pointing out the variable name is not bound to any value
+
+10. Research balanced search trees in Sedgewick [1997] and recommend a balanced-tree data structure for functional symbol table.
+    Ans: We can use a red-black tree for implementing the balanced binary search trees. We can have two data constructors RED and BLACK which differs only in their color.
+    Then we can perform insertion and deletion according to the algorithms described in https://en.wikipedia.org/wiki/Red%E2%80%93black_tree#Insertion. The basic idea is 
+    to check whether the local property of a red-black tree is violated by the insertion/deletion and adjust the violated part locally and return the repaired tree. Therefore
+    it can be implemented in a functional style.
+

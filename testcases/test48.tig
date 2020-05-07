@@ -1,0 +1,4 @@
+/* valid let with unit body */
+let
+in 
+end

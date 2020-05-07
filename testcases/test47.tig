@@ -1,0 +1,10 @@
+/* error : invalid recursion  */
+let 
+	type a = int 
+
+	var d:=0
+
+	type a = a
+in
+	0
+end

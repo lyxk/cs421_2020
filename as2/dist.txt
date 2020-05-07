@@ -1,0 +1,9 @@
+NetID: yl2335
+Name: Yangxiaokang Liu
+
+a. k = 3. To examine more than more than one character after an accepted state has been reached, that accepted state
+must transitions to other states so that the automaton's current state will move forward while the last accepted 
+state remain the same. Only state 5 satisfies this condition, after reaching state 5, at most 3 tokens may be read 
+(e, +|-, [^0-9]) to use the last accepted state and restart the automaton. For example, 0e+a, 0e-a, 1e++ all satisfy
+this condition.
+b. 0e+a. After going through the parser, it will become 0, e, +, a.

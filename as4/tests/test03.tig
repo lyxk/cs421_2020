@@ -1,0 +1,19 @@
+/* test03.tig --- declaration grouping */
+let var a := 5
+    function f() : int = g(a)
+    function g(i:int) = f()
+    type tree = {key:int, children:treelist}
+    type treelist = {head:tree, tail:treelist}
+    function h(t:tree) = g(t.key)
+    type atree = {key:int, children:treelist}
+    var x := 3
+    var y := 3
+    var z := 3
+    type atreelist = {head:tree, tail:treelist}
+    type a = int
+    type b = int
+    type c = int
+ in 
+    h(tree {key = 5, children=treelist{head=nil, tail=nil}}) 
+end
+

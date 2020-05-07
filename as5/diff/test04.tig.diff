@@ -1,0 +1,22 @@
+1,15c1,5
+< [autoloading done]
+< [attempting to load plugin $/lex-ext.cm]
+< [plugin $/lex-ext.cm loaded successfully]
+< [attempting to load plugin $/mllex-tool.cm]
+< [plugin $/mllex-tool.cm loaded successfully]
+< [attempting to load plugin $/grm-ext.cm]
+< [plugin $/grm-ext.cm loaded successfully]
+< [attempting to load plugin $/mlyacc-tool.cm]
+< [plugin $/mlyacc-tool.cm loaded successfully]
+< [New bindings added.]
+< tests/test04.tig:7.5:BREAK expression found outside of WHILE or FOR loop.
+< tests/test04.tig:11.10:Attempt to assign to a FOR loop induction variable.
+< tests/test04.tig:13.13:Attempt to assign to a FOR loop induction variable.
+< tests/test04.tig:20.5:BREAK expression found outside of WHILE or FOR loop.
+< tests/test04.tig:26.11:BREAK expression found outside of WHILE or FOR loop.
+---
+> test04.tig:7.5:BREAK expression found outside of WHILE or FOR loop.
+> test04.tig:11.10:Attempt to assign to a FOR loop induction variable.
+> test04.tig:13.13:Attempt to assign to a FOR loop induction variable.
+> test04.tig:20.5:BREAK expression found outside of WHILE or FOR loop.
+> test04.tig:26.11:BREAK expression found outside of WHILE or FOR loop.

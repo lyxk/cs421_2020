@@ -1,0 +1,40 @@
+[autoloading done]
+[attempting to load plugin $/lex-ext.cm]
+[plugin $/lex-ext.cm loaded successfully]
+[attempting to load plugin $/mllex-tool.cm]
+[plugin $/mllex-tool.cm loaded successfully]
+[attempting to load plugin $/grm-ext.cm]
+[plugin $/grm-ext.cm loaded successfully]
+[attempting to load plugin $/mlyacc-tool.cm]
+[plugin $/mlyacc-tool.cm loaded successfully]
+[New bindings added.]
+let
+var a := 5
+[[[ BEGIN fundecs
+function f()  : int =
+g(a)
+function g(i : int) =
+f()
+]]] END fundecs
+[[[ BEGIN tydecs
+type tree = {key : int, children : treelist}
+type treelist = {head : tree, tail : treelist}
+]]] END tydecs
+[[[ BEGIN fundecs
+function h(t : tree) =
+g(t.key)
+]]] END fundecs
+[[[ BEGIN tydecs
+type atree = {key : int, children : treelist}
+]]] END tydecs
+var x := 3
+var y := 3
+var z := 3
+[[[ BEGIN tydecs
+type atreelist = {head : tree, tail : treelist}
+type a = int
+type b = int
+type c = int
+]]] END tydecs
+
+in (h(tree{key  = 5, children  = treelist{head  = Nil, tail  = Nil}})) end

@@ -1,0 +1,348 @@
+(* translate.sml *)
+
+signature TRANSLATE = 
+sig 
+  type level
+  type access
+  type frag
+  type gexp
+
+  val outermost : level
+  val newLevel : {parent: level, formals: 'a list} -> level
+  val allocInFrame : level -> access
+  val getResult : unit -> frag list
+  (*val allocInRegister : unit -> access*)
+
+  (* helper functions used by Semant *)
+  val nthParam : level * int -> access
+  val addFrag : frag -> unit
+  val newLabel : unit -> Temp.label
+  val mainLabel : unit -> Temp.label
+  (* translation functions, returning gexp *)
+  val nilExp : gexp
+  val intExp : int -> gexp
+  val stringExp : string -> gexp
+  val opArithm : gexp * gexp * Absyn.oper -> gexp
+  val compNonStr : gexp * gexp * Absyn.oper -> gexp
+  val compStr : gexp * gexp * Absyn.oper -> gexp
+  val simpleVar : access * level -> gexp
+  val fieldVar : gexp * int -> gexp
+  val subscriptVar : gexp * gexp -> gexp
+  val assignExp : gexp * gexp -> gexp
+  val ifThen : gexp * gexp -> gexp
+  val ifThenElse : gexp * gexp * gexp -> gexp
+  val seqExp : gexp list -> gexp
+  val arrayExp : gexp * gexp -> gexp
+  val recordExp : gexp list -> gexp
+  val whileExp : gexp * gexp -> gexp
+  val forExp : access * gexp * gexp * gexp -> gexp
+  val breakExp : Temp.label -> gexp
+  val appExp : gexp list * Temp.label * level * level -> gexp
+  val letExp : gexp list * gexp -> gexp
+  val procEntryExit : {level : level, label : Temp.label, body : gexp} -> unit
+
+  val defaultEx : gexp
+  val defaultNx : gexp
+  val defaultCx : gexp
+
+end (* signature TRANSLATE *)
+
+
+functor TranslateGen(Register : REGISTER_STD) : TRANSLATE = 
+struct
+
+  datatype level = LEVEL of {frame : Frame.frame,              
+                             sl_offset : int,
+                             parent : level} * unit ref
+                 | TOP
+
+  datatype gexp = Ex of Tree.exp
+                | Nx of Tree.stm
+                | Cx of Temp.label * Temp.label -> Tree.stm
+
+  type access = level * int  (* might needs to be changed later *)
+  type frag = Frame.frag
+
+  val fragmentlist = ref ([] : frag list)
+  fun getResult () = let val r = !fragmentlist in (fragmentlist := nil; rev r) end (* flush the fragment list *)
+  val outermost = TOP
+
+
+  (*****************************************************************
+   *                  HELPERS USED BY SEMANT                       *
+   *****************************************************************)
+  (* dummy default values used for semantic error recovery, etc. *)
+  val defaultEx = Ex(Tree.CONST 0)
+  val defaultNx = Nx(Tree.EXP(Tree.CONST 0))
+  val defaultCx = let fun genstm (t : Temp.label, f : Temp.label) = Tree.LABEL t in Cx(genstm) end
+
+  (* create a new level for a function *)
+  fun newLevel {parent=p, formals=f} =
+      let
+        val len = length(f)
+        val (frame, offlst) = Frame.newFrame (len, Register.paramBaseOffset)
+        val sl_offset = hd offlst
+      in LEVEL ({frame=frame, sl_offset=sl_offset, parent=p}, ref ()) end
+
+  (* allocate space in the frame of the current function *)
+  fun allocInFrame (lev as LEVEL({frame, sl_offset, parent}, _)) =
+     let val offset = Frame.allocInFrame (frame, Register.localsBaseOffset) in (lev, offset) end
+    | allocInFrame _ = ErrorMsg.impossible "unexpected argument for allocInFrame"
+
+  (* given LEVEL, return access to the n-th argument (starting from 0) of the function *)
+  fun nthParam (lev as LEVEL({frame=f, sl_offset=_, parent=_}, _), n) = (lev, Frame.nthParam (n, Register.paramBaseOffset))
+    | nthParam _ = ErrorMsg.impossible "unexpected argument for nthParam"
+
+  (* generate a dummy label that serves as the default invalid break label *)
+  fun newLabel() = Temp.newlabel()
+  (* generate a specially reserved label for the main program *)
+  fun mainLabel() = Temp.namedlabel "tigermain"
+
+  (* given FRAG, add it to the global list of fragments *)
+  fun addFrag f = (fragmentlist := f::(!fragmentlist))
+
+
+  (*****************************************************************
+   *               TRANSLATE INTERNAL UTILITIES                    *
+   *****************************************************************)
+  (* convert a flat list of stms into a tree of SEQ of stms *)
+  fun seq [] = ErrorMsg.impossible "SEQ of stms cannot be empty"
+    | seq [a] = a
+    | seq (a::r) = Tree.SEQ(a, seq r)
+  (* unEx : gexp -> Tree.exp *)
+  fun unEx (Ex e) = e
+    | unEx (Nx s) = Tree.ESEQ(s, Tree.CONST 0)
+    | unEx (Cx genstm) =
+      let val r = Temp.newtemp()
+          val t = Temp.newlabel() and f = Temp.newlabel()
+      in Tree.ESEQ(seq[Tree.MOVE(Tree.TEMP r, Tree.CONST 1),
+                      genstm(t, f),
+                      Tree.LABEL f,
+                      Tree.MOVE(Tree.TEMP r, Tree.CONST 0),
+                      Tree.LABEL t],
+                  Tree.TEMP r)
+      end
+  (* unNx : gexp -> Tree.stm *)
+  fun unNx (Nx s) = s
+    | unNx (Ex e) = Tree.EXP(e)
+    | unNx (Cx genstm) = 
+      let val t = Temp.newlabel() and f = Temp.newlabel()
+      in genstm(t, f) end
+  (* unCx : gexp -> (Temp.label * Temp.label -> Tree.stm) *)
+  fun unCx (Cx genstm) = genstm
+    | unCx (Ex e) = (case e
+        of Tree.CONST 0 => let fun genstm(t, f) = Tree.LABEL t in genstm end
+        | _ => let fun genstm(t, f) = Tree.LABEL f in genstm end
+    | unCx (Nx _) = ErrorMsg.impossible "unexpected coercion Nx -> Cx"
+
+
+  (*****************************************************************
+   *                      ACTUAL TRANSLATORS                       *
+   *****************************************************************)
+  val nilExp = Ex(Tree.CONST(0)) (* a pointer to 0x0, dereferencing with MEM causes error *)
+  fun intExp i = Ex(Tree.CONST(i))
+  fun stringExp str =
+    let val lab = Temp.newlabel()
+    in (fragmentlist := (Frame.DATA {lab=lab, s=str})::(!fragmentlist); Ex(Tree.NAME(lab)))
+    end
+  (* translate an arithmetic expression *)
+  fun opArithm (expl : gexp, expr : gexp, oper : Absyn.oper) = 
+    let
+      val el = unEx expl
+      val er = unEx expr
+    in case oper
+      of Absyn.PlusOp => Ex(Tree.BINOP(Tree.PLUS, el, er))
+      | Absyn.MinusOp => Ex(Tree.BINOP(Tree.MINUS, el, er))
+      | Absyn.TimesOp => Ex(Tree.BINOP(Tree.MUL, el, er))
+      | Absyn.DivideOp => Ex(Tree.BINOP(Tree.DIV, el, er))
+      | _ => ErrorMsg.impossible "unexpected operator for opArithm"
+    end
+  (* compare non-strings *)
+  fun compNonStr (expl : gexp, expr : gexp, oper : Absyn.oper) =
+    let
+      val el = unEx expl
+      val er = unEx expr
+    in case oper
+      of Absyn.NeqOp => let fun s(t, f) = Tree.CJUMP(Tree.TEST(Tree.NE, el, er), t, f) in Cx(s) end
+      | Absyn.EqOp => let fun s(t, f) = Tree.CJUMP(Tree.TEST(Tree.EQ, el, er), t, f) in Cx(s) end
+      | Absyn.LtOp => let fun s(t, f) = Tree.CJUMP(Tree.TEST(Tree.LT, el, er), t, f) in Cx(s) end
+      | Absyn.LeOp => let fun s(t, f) = Tree.CJUMP(Tree.TEST(Tree.LE, el, er), t, f) in Cx(s) end
+      | Absyn.GtOp => let fun s(t, f) = Tree.CJUMP(Tree.TEST(Tree.GT, el, er), t, f) in Cx(s) end
+      | Absyn.GeOp => let fun s(t, f) = Tree.CJUMP(Tree.TEST(Tree.GE, el, er), t, f) in Cx(s) end
+      | _ => ErrorMsg.impossible "unexpected operator for compNonStr"
+    end
+  (* compare strings using runtime function *)
+  fun compStr (expl : gexp, expr : gexp, oper : Absyn.oper) =
+    let
+      val el = unEx expl
+      val er = unEx expr
+    in case oper
+      of Absyn.EqOp => Ex(Frame.externalCall("stringEqual", [el, er]))
+      | Absyn.NeqOp => Ex(Frame.externalCall("not", [Frame.externalCall("stringEqual", [el, er])]))
+      | Absyn.LtOp => Ex(Frame.externalCall("stringLessThan", [el, er]))
+      | Absyn.LeOp => Ex(Tree.BINOP(Tree.OR, Frame.externalCall("stringLessThan", [el, er]), Frame.externalCall("stringEqual", [el, er])))
+      | Absyn.GtOp => Ex(Frame.externalCall("not", [Tree.BINOP(Tree.OR, Frame.externalCall("stringLessThan", [el, er]), Frame.externalCall("stringEqual", [el, er]))]))
+      | Absyn.GeOp => Ex(Frame.externalCall("not", [Frame.externalCall("stringLessThan", [el, er])]))
+      | _ => ErrorMsg.impossible "unexpected operator for compStr"
+    end
+  (* translate a simple var, acc = declared level + offset; lev = current level *)
+  fun simpleVar (acc : access, lev : level) = 
+    let
+      val (dec_lev, dec_off) = acc
+      fun follow_slink(current : level, target : level, cumulate : Tree.exp) : Tree.exp = 
+        let
+          val LEVEL({frame=_, sl_offset=slink, parent=parent}, rc) = current
+          val LEVEL({frame=_, sl_offset=_, parent=_}, rt) = target
+        in if rc = rt
+          then Tree.MEM(Tree.BINOP(Tree.PLUS, Tree.CONST dec_off, cumulate), Frame.wordSize)
+          else follow_slink(parent, target, Tree.MEM(Tree.BINOP(Tree.PLUS, Tree.CONST slink, cumulate), Frame.wordSize))
+        end
+    in Ex(follow_slink(lev, dec_lev, Tree.TEMP(Register.FP)))
+    end
+  (* translate record.field, e is IR code for record, n is the index of the field *)
+  fun fieldVar (e : gexp, n : int) =
+    let val base = unEx e
+    in Ex(Tree.MEM(Tree.BINOP(Tree.PLUS, base, Tree.BINOP(Tree.MUL, Tree.CONST n, Tree.CONST Frame.wordSize)), Frame.wordSize))
+    end
+  (* translate a[i], e is IR code for a, e' is IR code for i *)
+  fun subscriptVar (e : gexp, e' : gexp) =
+    let
+      val base = unEx e
+      val index = unEx e'
+    in Ex(Tree.MEM(Tree.BINOP(Tree.PLUS, base, Tree.BINOP(Tree.MUL, index, Tree.CONST Frame.wordSize)), Frame.wordSize))
+    end
+  (* translating assignment expressions; lexp = l-value; rexp = r-value *)
+  fun assignExp(lexp : gexp, rexp : gexp) =
+    let
+      val laddr = unEx lexp
+      val rval = unEx rexp
+    in Nx(Tree.MOVE(laddr, rval))
+    end
+  (* translate if e1 then e2 *)
+  fun ifThen (e1 : gexp, e2 : gexp) =
+    let
+      val test = unCx e1
+      val then' = unEx e2
+      val t = Temp.newlabel() and join = Temp.newlabel()
+    in Nx(seq[test(t, join), Tree.LABEL t, Tree.EXP(then'), Tree.LABEL join])
+    end
+  (* translate if e1 then e2 else e3 *)
+  fun ifThenElse (e1 : gexp, e2 : gexp, e3 : gexp) =
+    let
+      val test = unCx e1
+      val then' = unEx e2
+      val else' = unEx e3
+      val t = Temp.newlabel() and f = Temp.newlabel() and join = Temp.newlabel()
+      val r = Temp.newtemp()
+    in Ex(Tree.ESEQ(seq[test(t, f),  (* TODO: optimize this; ask about JUMP *)
+                        Tree.LABEL t, Tree.MOVE(Tree.TEMP r, then'), Tree.JUMP(Tree.NAME(join), nil),
+                        Tree.LABEL f, Tree.MOVE(Tree.TEMP r, else'), Tree.JUMP(Tree.NAME(join), nil),
+                        Tree.LABEL join],
+              Tree.TEMP r))
+    end
+  (* translate a sequence of gexp's *)
+  fun seqExp (gexpl : gexp list) = 
+    let
+      fun cons_seq (nil, existing) : Tree.stm = existing
+        | cons_seq (ge::rest, existing) : Tree.stm = cons_seq (rest, Tree.SEQ(unNx ge, existing))
+    in case rev(gexpl) (* reverse so that last element appears first *)
+      of nil => defaultNx
+      | ge::nil => ge
+      | ge::rest => Ex(Tree.ESEQ(cons_seq(tl rest, unNx (hd rest)), unEx ge))
+    end
+  (* translate array creation; esize = length of array; einit = initialization value *)
+  fun arrayExp (esize : gexp, einit : gexp) =
+    Ex(Frame.externalCall("initArray", [unEx esize, unEx einit]))
+  (* translate record creation; fexps = REVERSED list of gexp for each field *)
+  fun recordExp (fexps : gexp list) =
+    let
+      val r = Temp.newtemp()
+      val len = length(fexps)
+      fun cons_fields_tree (nil, existing) = existing
+        | cons_fields_tree (f::rest, existing) = cons_fields_tree(rest,
+            Tree.SEQ(Tree.MOVE(Tree.MEM(Tree.BINOP(Tree.PLUS, Tree.TEMP r, Tree.CONST (Frame.wordSize * length(rest))), Frame.wordSize), unEx f), existing))
+    in if len = 0 then Ex(Tree.ESEQ(Tree.MOVE(Tree.TEMP r, Frame.externalCall("allocRecord", [Tree.CONST 0])), Tree.TEMP r))
+        else let
+          val fields_tree = cons_fields_tree(tl fexps,
+              Tree.MOVE(Tree.MEM(Tree.BINOP(Tree.PLUS, Tree.TEMP r, Tree.CONST(Frame.wordSize * length(tl fexps))), Frame.wordSize), unEx (hd fexps)))
+          val complete_tree = Tree.SEQ(Tree.MOVE(Tree.TEMP r, Frame.externalCall("allocRecord", [Tree.CONST (len * Frame.wordSize)])), fields_tree)
+        in Ex(Tree.ESEQ(complete_tree, Tree.TEMP r))
+        end
+    end
+  (* translate while loop; etest = test expression; ebody = body expression *)
+  fun whileExp (etest : gexp, ebody : gexp) = 
+    let
+      val test = Temp.newlabel()
+      val done = Temp.newlabel()
+      val body = Temp.newlabel()
+      val testfun = unCx etest
+      val bodyexp = unNx ebody
+    in
+      Nx(seq[Tree.LABEL test,
+                testfun(body, done),
+              Tree.LABEL body,
+                bodyexp, Tree.JUMP (Tree.NAME test, nil),
+              Tree.LABEL done])
+    end
+  (* translate for loop; counter = access for loop var; elo = low; ehi = high; ebody = body *)
+  fun forExp (counter : access, elo : gexp, ehi : gexp, ebody : gexp) =
+    let
+      val lo = unEx elo
+      val hi = unEx ehi
+      val bodyexp = unNx ebody
+      val (lev, off) = counter
+      val test = Temp.newlabel()
+      val done = Temp.newlabel()
+      val body = Temp.newlabel()
+      val increment = Temp.newlabel()
+      val var = Tree.MEM(Tree.BINOP(Tree.PLUS, Tree.CONST off, Tree.TEMP(Register.FP)), Frame.wordSize)
+    in
+      Nx(seq[Tree.MOVE(var, lo),
+            Tree.CJUMP(Tree.TEST(Tree.LE, lo, hi), body, done),
+            Tree.LABEL body,
+              bodyexp, Tree.JUMP (Tree.NAME test, nil),
+            Tree.LABEL test,
+              Tree.CJUMP(Tree.TEST(Tree.LT, var, hi), increment, done),
+            Tree.LABEL increment,
+              Tree.MOVE(var, Tree.BINOP(Tree.PLUS, var, Tree.CONST 1)), Tree.JUMP(Tree.NAME body, nil),
+            Tree.LABEL done])
+    end
+  (* translate break: jump to the done label of the current nested loop *)
+  fun breakExp (done_label : Temp.label) = Nx(Tree.JUMP(Tree.NAME done_label, nil))
+  (* translate function calls: eargs = gexp list of args; lab = label of this function;
+   * lev = level of this function; call_lev = who calls this function *)
+  (* note that this function needs to update the maxargs in the calling level *)
+  fun appExp(eargs : gexp list, lab : Temp.label, lev : level, call_lev : level) =
+    if lev = outermost
+    then Ex(Tree.CALL(Tree.NAME(lab), map unEx eargs))
+    else let
+        val LEVEL({frame=f, sl_offset=sl, parent=p}, _) = lev
+        val LEVEL({frame=cf, sl_offset=csl, parent=cp}, _) = call_lev
+        val {formals=_, offlst=_, locals=_, maxargs=ma} = f
+      in (* TODO : how to compute static link ?? *)
+        (ma := Int.max(!ma, length(eargs) + 1); (* maxargs takes into account the static link !!! *)
+          Ex(Tree.CALL(Tree.NAME(lab), (Tree.CONST sl)::(map unEx eargs))))
+      end
+  (* translate let expressions: declist = list of var initialization gexps; body = gexp of body expression *)
+  fun letExp(declist : gexp list, body : gexp) = if length(declist) = 0 then body else
+    let
+      val decseq = seq (map unNx declist)
+      val bodyexp = unEx body
+    in Ex(Tree.ESEQ(decseq, bodyexp))
+    end
+  (* convert function into a fragment and store it *)
+  fun procEntryExit {level=lev, label=lab, body=b} =
+    let
+      val LEVEL({frame=f, ...}, _) = lev
+      val fragment = Frame.PROC {name=lab, body=unNx b, frame=f}
+    in addFrag fragment
+    end
+
+
+end (* functor TranslateGen *)
+
+
+
+
+
+     

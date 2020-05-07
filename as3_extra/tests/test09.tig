@@ -1,0 +1,5 @@
+/* test09.tig -- non-Lvalue used on left side of := */
+(
+x := 42;
+f() := 42
+)

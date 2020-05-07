@@ -1,0 +1,26 @@
+1,17c1,7
+< [autoloading done]
+< [attempting to load plugin $/lex-ext.cm]
+< [plugin $/lex-ext.cm loaded successfully]
+< [attempting to load plugin $/mllex-tool.cm]
+< [plugin $/mllex-tool.cm loaded successfully]
+< [attempting to load plugin $/grm-ext.cm]
+< [plugin $/grm-ext.cm loaded successfully]
+< [attempting to load plugin $/mlyacc-tool.cm]
+< [plugin $/mlyacc-tool.cm loaded successfully]
+< [New bindings added.]
+< tests/test10.tig:3.14:Undefined identifier in function call. Assuming function returns INT.
+< tests/test10.tig:4.14:Type mismatch in parameter 1
+< tests/test10.tig:13.8:Type mismatch in parameter 2
+< tests/test10.tig:13.8:Type mismatch in parameter 1
+< tests/test10.tig:12.6:Type mismatch in parameter 1
+< tests/test10.tig:11.4:Type mismatch in parameter 1
+< tests/test10.tig:17.8:Primitive (non-array/record) cycle detected in recursive type definition; Type forced to INT. (c).
+---
+> test10.tig:3.14:Undefined identifier in function call.  Assuming function returns INT.
+> test10.tig:4.14:Type mismatch in parameter 1.
+> test10.tig:13.8:Type mismatch in parameter 2.
+> test10.tig:13.8:Type mismatch in parameter 1.
+> test10.tig:12.6:Type mismatch in parameter 1.
+> test10.tig:11.4:Type mismatch in parameter 1.
+> test10.tig:17.8:Primitive (non-array/record) cycle detected in recursive type definition; Type forced to INT. (c).

@@ -1,0 +1,4 @@
+/* test04.tig --- if then else, with logical operators */
+(if a & -b then a|b else c|d)|
+(if c | d then d|e else f&g)&
+(if e & f | g then 42 else 43)

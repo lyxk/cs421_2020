@@ -1,0 +1,31 @@
+/* test10.tig -- cascading of errors */
+let
+    var s := getch()        /* err, i meant `getchar' */
+    var i := ord(s)
+    /* but ord should still make i's type be int */
+in
+   (i + 2) *        /* OK */
+   (3 + i)          /* OK */
+ ;
+   /* using s might still fail... I guess that's okay */
+   concat(s, 
+     concat(s, 
+       concat(s, 
+                 s)));
+
+   let 
+       type b = c
+       type c = b
+   in
+       42
+   end
+end
+/** output:
+test10.tig:3.14:Undefined identifier in function call.  Assuming function returns INT.
+test10.tig:4.14:Type mismatch in parameter 1.
+test10.tig:13.8:Type mismatch in parameter 2.
+test10.tig:13.8:Type mismatch in parameter 1.
+test10.tig:12.6:Type mismatch in parameter 1.
+test10.tig:11.4:Type mismatch in parameter 1.
+test10.tig:17.8:Primitive (non-array/record) cycle detected in recursive type definition; Type forced to INT. (c).
+ **/

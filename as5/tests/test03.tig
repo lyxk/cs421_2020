@@ -1,0 +1,50 @@
+/* test03.tig -- name equivalence of record/array types, but not other types */
+let type years = int
+    type cm = int
+    type person1 = {age : years, height : cm}
+    type person2 = {age : years, height : cm}
+    var  myAge : years := 25
+    var  myHeight : cm := 170
+    var  me1 := person1 {age = myHeight,  /* not an error */
+                         height = myAge}  /* not an error */
+    var  me2 := person2 {age = myAge,
+	                 height = myHeight}
+in
+    me1.age := me2.age;       /* ok */
+    me1.height := me2.height; /* ok */
+    me1 = me1;                /* ok */
+    me1 = me2;                /* error: person1 != person2 */
+    me2 := me1;               /* error: person1 != person2 */
+
+    let type arr1 = array of years
+        type arr2 = array of cm
+        var arr1 := arr1 [10] of myHeight  /* ok */
+        var arr2 := arr2 [-1] of myAge     /* negative size, but ok */
+    in
+        arr1[13] := arr2[0];   /* out of bounds, but ok */
+        arr1 := arr2;          /* error: arr1 != arr2 */
+
+	let type person1 = {age : years, height : cm}
+            var me3 := person1 {age = myAge, height = myHeight}
+        in
+            me1 <> me3     /* error, local person1 != outer person1 */
+        end
+    end;
+
+    let var q := nil       /* error, must give type */
+        var r : person1 := nil  /* ok */
+    in
+        me1 = nil;   /* ok */
+        me1 = r;     /* ok */
+        me2 = nil;   /* ok */
+        me2 = r      /* error: person2 != person1 */
+    end
+end
+/** Output:
+test03.tig:16.9:operand types do not allow comparison
+test03.tig:17.9:incompatible type in assignment
+test03.tig:25.14:incompatible type in assignment
+test03.tig:30.17:operand types do not allow comparison
+test03.tig:34.9:must specify record type for 'nil'
+test03.tig:40.13:operand types do not allow comparison
+ **/

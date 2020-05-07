@@ -1,0 +1,39 @@
+[autoloading done]
+[attempting to load plugin $/lex-ext.cm]
+[plugin $/lex-ext.cm loaded successfully]
+[attempting to load plugin $/mllex-tool.cm]
+[plugin $/mllex-tool.cm loaded successfully]
+[New bindings added.]
+LET   36
+FUNCTION   60
+ID(nfactor)     69
+LPAREN   76
+ID(n)     77
+COLON   78
+ID(int)     80
+RPAREN   83
+COLON   84
+ID(int)     86
+EQ   90
+IF   94
+ID(n)     98
+EQ   100
+INT(0)   102
+THEN   108
+INT(1)   113
+ELSE   118
+ID(n)     123
+TIMES   125
+ID(nfactor)     127
+LPAREN   134
+ID(n)     135
+MINUS   136
+INT(1)   137
+RPAREN   138
+IN   141
+ID(nfactor)     145
+LPAREN   152
+INT(10)   153
+RPAREN   155
+END   157
+EOF   161

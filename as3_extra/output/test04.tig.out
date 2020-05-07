@@ -1,0 +1,14 @@
+[autoloading done]
+[attempting to load plugin $/lex-ext.cm]
+[plugin $/lex-ext.cm loaded successfully]
+[attempting to load plugin $/mllex-tool.cm]
+[plugin $/mllex-tool.cm loaded successfully]
+[attempting to load plugin $/grm-ext.cm]
+[plugin $/grm-ext.cm loaded successfully]
+[attempting to load plugin $/mlyacc-tool.cm]
+[plugin $/mlyacc-tool.cm loaded successfully]
+[New bindings added.]
+tests/test04.tig:4.4:syntax error found at EOF
+
+uncaught exception Error
+  raised at: parsetest.sml:18.47-18.61

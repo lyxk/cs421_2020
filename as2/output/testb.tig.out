@@ -1,0 +1,9 @@
+[autoloading done]
+[attempting to load plugin $/lex-ext.cm]
+[plugin $/lex-ext.cm loaded successfully]
+[attempting to load plugin $/mllex-tool.cm]
+[plugin $/mllex-tool.cm loaded successfully]
+[New bindings added.]
+tests/testb.tig:1.1:illegal character !
+tests/testb.tig:1.2:illegal character !
+EOF   27

@@ -1,0 +1,36 @@
+Name: Yangxiaokang Liu
+NetID: yl2335
+
+(1) What you have done so far
+  
+  I implemented RegAlloc in as7. I added a function getInt to graph.sml and graph.sig to extrac the index of a node.
+  Except from that, I only changed makegraph.sml, liveness.sml and regalloc.sml
+
+  1. In makegraph.sml, I implemented the construction of flowgraph from a list of Assem instructions.
+
+  2. In liveness.sml, I implemented liveness analysis using the algorithm described in page 214 of Appel's book through 
+     Array. Interference graph is constructed by first creating a graph for all temps and then adding edges according to
+     the rules described in page 222 of Appel's book.
+     
+  3. In regalloc.sml, I implemented the select and simplify process of register allocation. I didn't add special treatment for
+     move instructions and I also assume enough pseudo registers have been provided by the CodeGen module. This part can
+     be further improved by adding coalescing and spilling.
+
+(2) How to use? 
+
+  1. make
+  2. ./tigcc {filename}.tig [{progname}]
+  3. ./prog or ./{progname} (If {progname} is specified in step 2)
+
+(3) Which groups you have tested your code with (I'm doing RA for as7)
+    
+    I ran my CodeGen with ig/ys542 and cg/yl2335. It produces resonable assembly code with real register names. 
+    The code passed all testcases. 
+
+(4) Any assumptions you have made about your current implementations
+
+    (a) The correctness of the ItreeGen part, including array bounds checking and nil record checking.     
+    (b) The correctness of the CodeGen part. Spilling is done in codegen.sml and %ecd and %edx are used for spilling. 
+    (d) RegAlloc part's available colors are callee-svaed registers and all pseudo registers (f1, .., f40).
+    (e) Enough pseudo registers have been provided by CodeGen module through registers.
+

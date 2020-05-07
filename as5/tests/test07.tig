@@ -1,0 +1,56 @@
+/* test07.tig -- function bodies and function application */
+let
+    function double (x:int) : int = x * x
+
+    var xx := 0
+    function id(x:int) : int = 
+	(xx := x)   /* err, return type */
+
+    function set(x:int) = 
+        x + xx          /* err, return type */
+
+    function use_param_types(xx:string, x:int, y:string) =
+       (xx := y;
+        x := size(xx);     /* stdlib function, ok */
+        y := "foo";
+        y := chr(x);
+        x := ord(y);
+        xx := id(x)       /* err */
+       )
+
+    function g (x : int) : int =  /* ok */
+       g(x)
+
+    function shadowing_formals(aa:string, aa:int) =
+      (aa := "hello";   /* err, shadowed by aa:int ??? */
+       aa := 42
+      )
+
+    function f (f : int, f : string) : int =
+                     /* what is f bound to here??? */
+                     /* two of these have to be errors... */
+      (f := 42;
+       f := "hello";
+       f(42,"hello");
+       0
+      )
+in
+    f(42,"hello");  /* ok */
+    let 
+        function f (x : int) : int = double(x)
+
+	type list = {hd : int, tl : list}
+        function g () : list = nil          /* ok? */
+    in
+        f(3)  /* ok */
+    end
+    + 5  /* ok */
+end
+/** output:
+test07.tig:6.5:function return type inconsistent with declaration
+test07.tig:9.5:function return type inconsistent with declaration
+test07.tig:18.12:incompatible type in assignment
+test07.tig:25.11:incompatible type in assignment
+test07.tig:32.10:incompatible type in assignment
+test07.tig:34.8:function name expected where variable name 'f' is found
+ **/

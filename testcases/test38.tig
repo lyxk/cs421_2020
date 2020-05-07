@@ -1,0 +1,7 @@
+/* redeclaration of type error */
+let
+	type a = int
+	type a = string
+in
+	0
+end
